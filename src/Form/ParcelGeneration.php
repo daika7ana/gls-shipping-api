@@ -577,4 +577,12 @@ class ParcelGeneration extends Form {
 		return $this;
 	}
 
+	public function setParcelAttributes(Array $array): self
+	{
+		foreach($array as $attribute => $value)
+			$this->$attribute = $value;
+
+		return $this;
+	}
+
 }
