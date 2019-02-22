@@ -186,25 +186,18 @@ class ParcelGeneration extends Form {
 	{
 		$this->timestamp = (new \DateTime('now', new \DateTimeZone('Europe/Budapest')))->format('YmdHis');
 		$data            = parent::toArray();
-		if ($this->services) $data[ 'services' ] = array_map(function (ParcelService $srv)
-		{
-			return $srv->toArray();
-		}, $this->services);
-		$data[ 'rand' ] = time();
+		
+		if ($this->services) 
+			$data[ 'services' ] = array_map(function (ParcelService $srv) { 
+					return $srv->toArray(); }, 
+				$this->services);
 
 		$hash = '';
-		foreach ($data as $key => $value)
-		{
-			if ($key != 'services'
-				&& $key != 'hash'
-				&& $key != 'timestamp'
-				&& $key != 'printit'
-				&& $key != 'printertemplate'
-				&& $key != 'rand'
-			)
-			{
-				$hash .= $value;
-			}
+		foreach ($data as $key => $value) {
+			if(in_array($key, array('services', 'hash', 'timestamp', 'printit', 'printertemplate'))) 
+				continue;
+
+			$hash .= $value;
 		}
 		$data[ 'hash' ] = sha1($hash);
 
