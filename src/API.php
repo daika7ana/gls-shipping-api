@@ -3,10 +3,10 @@
 namespace GLS;
 
 use Buzz\Browser;
-use Buzz\Client\Curl;
-use Doctrine\Common\Annotations\AnnotationRegistry;
 use nusoap_client;
+use Buzz\Client\Curl;
 use Symfony\Component\DomCrawler\Crawler;
+use Doctrine\Common\Annotations\AnnotationRegistry;
 
 // Validation autoloading
 AnnotationRegistry::registerLoader(function ($name) {
@@ -58,17 +58,14 @@ class API {
 	public function generateParcel(Form\ParcelGeneration $form) {
 		$form->setPrintit(TRUE)->validate();
 
-		try
-		{
+		try {
 			$data = $this->requestNuSOAP('printlabel', $form);
 		}
-		catch (\SoapFault $e)
-		{
+		catch (\SoapFault $e) {
 			throw new Exception\ParcelGeneration($e->getMessage());
 		}
 
-		if (empty($data['successfull']))
-		{
+		if (empty($data['successfull'])) {
 			throw new Exception\ParcelGeneration(
 				'Response with error',
 				$data['errcode'] ?
@@ -77,7 +74,8 @@ class API {
 			);
 		}
 
-		if (!count($data[ 'pcls' ])) throw new Exception\ParcelGeneration("No parcels numbers received!");
+		if (!count($data[ 'pcls' ])) 
+			throw new Exception\ParcelGeneration("No parcels numbers received!");
 
 		return [
 			'tracking_code' => 1 == count($data[ 'pcls' ]) ? $data[ 'pcls' ][0] : $data[ 'pcls' ],
@@ -97,7 +95,8 @@ class API {
 		$dom = new Crawler($html);
 		$row = $dom->filter('table tr.colored_0, table tr.colored_1')->first();
 
-		if (!count($row)) throw new Exception('Tracking code wasn`t registered or error occured!');
+		if (!count($row)) 
+			throw new Exception('Tracking code wasn`t registered or error occured!');
 
 		$data = array_map('trim', [
 			'date' => $row->filter('td')->eq(0)->text(),
@@ -120,11 +119,11 @@ class API {
 	 * @return mixed
 	 */
 	protected function requestNuSOAP($method, $data = array()) {
-		if ($data instanceof Form) $data = $data->toArray();
+		if ($data instanceof Form) 
+			$data = $data->toArray();
 
 		$client = new nusoap_client($this->getApiUrl(), 'wsdl');
 
-		// Workaround " <b>Notice</b>: Array to string conversion in fergusean/nusoap/lib/class.wsdl.php:1550"
 		ob_start();
 		$result = $client->call($method, $data);
 		ob_end_clean();
@@ -133,9 +132,12 @@ class API {
 	}
 
 	protected function request($url, $data = array(), $method = 'GET', array $headers = array()) {
-		if ($data instanceof Form) $data = $data->toArray();
+		if ($data instanceof Form) 
+			$data = $data->toArray();
+		
 		$client = new Curl();
 		$client->setVerifyPeer(FALSE);
+		
 		$browser  = new Browser($client);
 		$response = $browser->submit($url, $data, $method, $headers);
 
@@ -150,7 +152,8 @@ class API {
 	 */
 	protected function getApiUrl()
 	{
-		if (empty($this->urls[$this->countryCode])) throw new Exception('Wrong country code - ' . $this->countryCode);
+		if (empty($this->urls[$this->countryCode])) 
+			throw new Exception('Wrong country code - ' . $this->countryCode);
 
 		return $this->urls[$this->countryCode];
 	}
