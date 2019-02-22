@@ -14,7 +14,7 @@
 	    "symfony/validator" : "~4",
 	    "doctrine/common"   : "~2.4",
 	    "kriswallsmith/buzz": "~0.10",
-	    "fergusean/nusoap"	: "~0.9.5",
+	    "econea/nusoap"	: "~0.9.5",
 	    "symfony/dom-crawler": "~4",
 	    "symfony/css-selector": "~4"
     },
