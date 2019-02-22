@@ -2,6 +2,7 @@
 
 namespace GLS;
 
+use Illuminate\Support\Str;
 use Symfony\Component\Validator\Validation;
 
 abstract class Form {
@@ -18,7 +19,8 @@ abstract class Form {
 	{
 		$validator  = Validation::createValidatorBuilder()->enableAnnotationMapping()->getValidator();
 		$violations = $validator->validate($this);
-		if ($violations->count()) throw new Exception\Validation($violations);
+		if ($violations->count()) 
+			throw new Exception\Validation($violations);
 
 		return $this;
 	}
