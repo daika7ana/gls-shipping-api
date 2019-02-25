@@ -25,12 +25,12 @@ class API {
 	const STATUS_CLIENT_NOT_AT_HOME = '12-Consignee is not at home';
 
 	protected $urls = [
-		'HU' => 'http://online.gls-hungary.com/webservices/soap_server.php?wsdl&ver=14.05.20.01',
-		'SK' => 'http://online.gls-slovakia.sk/webservices/soap_server.php?wsdl&ver=14.05.20.01',
-		'CZ' => 'http://online.gls-czech.com/webservices/soap_server.php?wsdl&ver=14.05.20.01',
-		'RO' => 'http://online.gls-romania.ro/webservices/soap_server.php?wsdl&ver=14.05.20.01',
-		'SI' => 'http://connect.gls-slovenia.com/webservices/soap_server.php?wsdl&ver=14.05.20.01',
-		'HR' => 'http://online.gls-croatia.com/webservices/soap_server.php?wsdl&ver=14.05.20.01',
+		'HU' => 'http://online.gls-hungary.com/webservices/soap_server.php?wsdl',
+		'SK' => 'http://online.gls-slovakia.sk/webservices/soap_server.php?wsdl',
+		'CZ' => 'http://online.gls-czech.com/webservices/soap_server.php?wsdl',
+		'RO' => 'http://online.gls-romania.ro/webservices/soap_server.php?wsdl',
+		'SI' => 'http://connect.gls-slovenia.com/webservices/soap_server.php?wsdl',
+		'HR' => 'http://online.gls-croatia.com/webservices/soap_server.php?wsdl',
 	];
 
 	protected $countryCode = '';
@@ -123,6 +123,8 @@ class API {
 			$data = $data->toArray();
 
 		$client = new nusoap_client($this->getApiUrl(), 'wsdl');
+		$client->soap_defencoding = 'UTF-8';
+		$client->decode_utf8 = false; 
 
 		ob_start();
 		$result = $client->call($method, $data);
@@ -134,7 +136,7 @@ class API {
 	protected function request($url, $data = array(), $method = 'GET', array $headers = array()) {
 		if ($data instanceof Form) 
 			$data = $data->toArray();
-		
+
 		$client = new Curl();
 		$client->setVerifyPeer(FALSE);
 		
