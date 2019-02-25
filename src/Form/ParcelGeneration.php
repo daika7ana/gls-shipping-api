@@ -2,6 +2,7 @@
 
 namespace GLS\Form;
 
+use GLS\API;
 use GLS\Form;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -181,28 +182,6 @@ class ParcelGeneration extends Form {
 	protected $printit = TRUE;
 	protected $timestamp;
 	protected $hash;
-
-	public function toArray()
-	{
-		$this->timestamp = (new \DateTime('now', new \DateTimeZone('Europe/Budapest')))->format('YmdHis');
-		$data            = parent::toArray();
-		
-		if ($this->services) 
-			$data[ 'services' ] = array_map(function (ParcelService $srv) { 
-					return $srv->toArray(); }, 
-				$this->services);
-
-		$hash = '';
-		foreach ($data as $key => $value) {
-			if(in_array($key, array('services', 'hash', 'timestamp', 'printit', 'printertemplate'))) 
-				continue;
-
-			$hash .= $value;
-		}
-		$data[ 'hash' ] = sha1($hash);
-
-		return $data;
-	}
 
 	// --- Setters
 
@@ -570,12 +549,47 @@ class ParcelGeneration extends Form {
 		return $this;
 	}
 
+	// Class functions
+
+	public function toArray()
+	{
+		$this->timestamp = (new \DateTime('now', new \DateTimeZone('Europe/Bucharest')))->format('YmdHis');
+		$data            = parent::toArray();
+
+		if ($this->services) 
+			$data[ 'services' ] = array_map(function (ParcelService $srv) { 
+					return $srv->toArray(); }, 
+				$this->services);
+
+		$this->generateHash($data);
+
+		return $data;
+	}
+
+	protected function generateHash(&$data)
+	{
+		$hash = '';
+		foreach ($data as $key => $value) {
+			if(in_array($key, array('services', 'hash', 'timestamp', 'printit', 'printertemplate')))
+				continue;
+
+			$hash .= $value;
+		}
+
+		$data[ 'hash' ] = sha1($hash);
+	}
+
 	public function setParcelAttributes(Array $array): self
 	{
 		foreach($array as $attribute => $value)
 			$this->$attribute = $value;
 
 		return $this;
+	}
+
+	public function getParcelAttributes(): array
+	{
+		return get_object_vars($this);
 	}
 
 }
