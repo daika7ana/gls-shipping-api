@@ -79,7 +79,7 @@ class API {
 
 		return [
 			'tracking_code' => 1 == count($data[ 'pcls' ]) ? $data[ 'pcls' ][0] : $data[ 'pcls' ],
-			'raw_pdf' => !empty($data['pdfdata']) ? base64_decode($data['pdfdata']) : FALSE,
+			'raw_pdf' => !empty($data['pdfdata']) ? $data['pdfdata'] : FALSE,
 		];
 	}
 
