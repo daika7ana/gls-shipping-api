@@ -157,7 +157,7 @@ class ParcelGeneration extends Form {
 	protected $clientref;
 	/**
 	 * COD amount
-	 * @Assert\Range(min = 1, max = 9999)
+	 * @Assert\Range(min = 0, max = 9999)
 	 */
 	protected $codamount;
 	/**
