@@ -4,8 +4,8 @@
     "license": "GPL-3.0",
     "authors": [
         {
-            "name": "And",
-            "email": "and.webdev@gmail.com"
+            "name": "Dan-Radu Pana",
+            "email": "danradu.pana@gmail.com"
         }
     ],
     "minimum-stability": "alpha",
@@ -13,7 +13,7 @@
 	    "php"               : ">=5.4.0",
 	    "symfony/validator" : "~4",
 	    "doctrine/common"   : "~2.4",
-	    "kriswallsmith/buzz": "~0.10",
+	    "guzzlehttp/guzzle": "^6.3",
 	    "econea/nusoap"	: "~0.9.5",
 	    "symfony/dom-crawler": "~4",
 	    "symfony/css-selector": "~4"
