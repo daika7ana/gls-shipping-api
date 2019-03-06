@@ -2,12 +2,11 @@
 
 namespace GLS;
 
-use Buzz\Browser;
-use Buzz\Client\Curl;
-use Doctrine\Common\Annotations\AnnotationRegistry;
 use nusoap_client;
 use SimpleXMLElement;
+use GuzzleHttp\Client;
 use Symfony\Component\DomCrawler\Crawler;
+use Doctrine\Common\Annotations\AnnotationRegistry;
 
 // Validation autoloading
 AnnotationRegistry::registerLoader(function ($name) {
@@ -16,14 +15,7 @@ AnnotationRegistry::registerLoader(function ($name) {
 
 class API
 {
-	const STATUS_DELIVERED = '05-Delivered';
-    const STATUS_IN_DELIVERY = '04-In delivery van';
-    const STATUS_ARRIVING_TO_DEPOT = '03-Arriving in Depot';
-    const STATUS_DEPOT_TRANSIT = '53-DEPOT TRANSIT';
-    const STATUS_PICKED_UP = '86-Pacel picked up';
-    const STATUS_CLIENT_DATA_RECEIVED = '51-Client data received';
-    const STATUS_HOLD_IN_DEPOT = '07-Hold in depot';
-    const STATUS_CLIENT_NOT_AT_HOME = '12-Consignee is not at home';
+    protected $countryCode = '';
 
     protected $urls = [
         'HU' => 'http://online.gls-hungary.com/webservices/soap_server.php?wsdl',
@@ -33,8 +25,6 @@ class API
         'SI' => 'http://connect.gls-slovenia.com/webservices/soap_server.php?wsdl',
         'HR' => 'http://online.gls-croatia.com/webservices/soap_server.php?wsdl',
     ];
-
-    protected $countryCode = '';
 
     /**
      * API constructor
@@ -139,12 +129,38 @@ class API
             'info' => $row->filter('td')->eq(3)->text(),
         ]);
 
-        return $data['status'];
+        return $data;
     }
 
-    public function getTrackingUrl($parcelNumber, $language = 'en')
+    public function getTrackingUrl($parcelNumber)
     {
-        return "http://online.gls-hungary.com/tt_page.php?tt_value=$parcelNumber&lng=$language";
+        return "http://online.gls-romania.ro/tt_page.php?tt_value=$parcelNumber";
+    }
+
+    /**
+     * @param Array $login_data must contain ['username', 'password']
+     * 
+     * @throws Exception
+     * 
+     * @return Array
+     */
+    public function validateGLSAccount(Array $login_data): Array
+    {
+        $required_keys = ['username', 'password'];
+        $missing_keys = array_diff_key(array_flip($required_keys), $login_data);
+        
+        if ($missing_keys) {
+            throw new Exception('The provided array has missing keys.');
+        }
+
+        $login_data['page'] = 'welcome.php';
+
+        $html = $this->request('http://online.gls-romania.ro/login.php', $login_data , 'POST');
+
+		$dom = new Crawler($html);
+		$row = $dom->filter('meta[http-equiv="Content-Type"]')->first();
+
+        return !count($row) ? array('success' => 1) : array('success' => 0);
     }
 
     /**
@@ -170,19 +186,16 @@ class API
         return $result;
     }
 
-    protected function request($url, $data = array(), $method = 'GET', array $headers = array())
+    protected function request($url, $data = array(), $method = 'GET')
     {
         if ($data instanceof Form) {
             $data = $data->toArray();
         }
 
-        $client = new Curl();
-        $client->setVerifyPeer(false);
+        $client = new Client();
+        $response = $client->request($method, $url, [ 'form_params' => $data ]);
 
-        $browser = new Browser($client);
-        $response = $browser->submit($url, $data, $method, $headers);
-
-        return $response->getContent();
+        return $response->getBody()->getContents();
     }
 
     /**

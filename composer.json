@@ -10,17 +10,17 @@
     ],
     "minimum-stability": "alpha",
     "require": {
-	    "php"               : ">=5.4.0",
-	    "symfony/validator" : "~4",
-	    "doctrine/common"   : "~2.4",
-	    "guzzlehttp/guzzle": "^6.3",
-	    "econea/nusoap"	: "~0.9.5",
-	    "symfony/dom-crawler": "~4",
-	    "symfony/css-selector": "~4"
+        "php": ">=7.0",
+        "symfony/validator": "~4",
+        "doctrine/common": "~2.4",
+        "guzzlehttp/guzzle": "^6.3",
+        "econea/nusoap": "~0.9.5",
+        "symfony/dom-crawler": "~4",
+        "symfony/css-selector": "~4"
     },
-	"autoload": {
-		"psr-4": {
-			"GLS\\": "src/"
-		}
-	}
+    "autoload": {
+        "psr-4": {
+            "GLS\\": "src/"
+        }
+    }
 }
