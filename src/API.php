@@ -5,6 +5,7 @@ namespace GLS;
 use Buzz\Browser;
 use nusoap_client;
 use Buzz\Client\Curl;
+use SimpleXMLElement;
 use Symfony\Component\DomCrawler\Crawler;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 
@@ -55,7 +56,8 @@ class API {
 	 * } </pre>
 	 * @throws Exception\ParcelGeneration
 	 */
-	public function generateParcel(Form\ParcelGeneration $form) {
+	public function generateParcel(Form\ParcelGeneration $form) 
+	{
 		$form->setPrintit(TRUE)->validate();
 
 		try {
@@ -84,13 +86,43 @@ class API {
 	}
 
 	/**
+	 * Regenerate PDF based on the already known PclID
+	 * 
+	 * @param String $parcel_id required for PDF generation
+	 * 
+	 * @param Array $data must contain: ['username', 'password', 'senderid', 'printertemplate']
+	 * @throws Exception
+	 * 
+	 * @return SimpleXMLElement
+	 */
+	public function getParcelPdf(String $parcel_id, Array $requested_data): SimpleXMLElement
+    {
+		$required_keys = ['username', 'password', 'senderid', 'printertemplate'];
+		$missing_keys = array_diff_key(array_flip($required_keys), $requested_data);
+
+		if($missing_keys) 
+			throw new Exception('The provided array has missing keys.');
+
+		$requested_parcel_pdf = "<?xml version='1.0' encoding = 'UTF-8'?><DTU RequestType = 'GlsApiRequest' MethodName='printLabels'><Shipments><Shipment><PclIDs><long>{$parcel_id}</long></PclIDs></Shipment></Shipments></DTU>";
+
+		$requested_data['data'] = base64_encode(gzencode($requested_parcel_pdf,9));
+			$requested_data['is_autoprint_pdfs'] = false;
+
+		$response = $this->requestNuSOAP('getprintedlabels_gzipped_xml', $requested_data);
+		$xml = gzdecode($response);
+
+		return simplexml_load_string($xml);
+    }
+
+	/**
 	 * Get parcel status
 	 *
 	 * @param $tracking_code
 	 * @return mixed
 	 * @throws Exception
 	 */
-	public function getParcelStatus($tracking_code) {
+	public function getParcelStatus($tracking_code) 
+	{
 		$html = $this->request($this->getTrackingUrl($tracking_code));
 		$dom = new Crawler($html);
 		$row = $dom->filter('table tr.colored_0, table tr.colored_1')->first();
@@ -108,7 +140,8 @@ class API {
 		return $data['status'];
 	}
 
-	public function getTrackingUrl($parcelNumber, $language = 'en') {
+	public function getTrackingUrl($parcelNumber, $language = 'en') 
+	{
 		return "http://online.gls-hungary.com/tt_page.php?tt_value=$parcelNumber&lng=$language";
 	}
 
@@ -118,7 +151,8 @@ class API {
 	 * @throws \SoapFault
 	 * @return mixed
 	 */
-	protected function requestNuSOAP($method, $data = array()) {
+	protected function requestNuSOAP($method, $data = array()) 
+	{
 		if ($data instanceof Form) 
 			$data = $data->toArray();
 
@@ -133,7 +167,8 @@ class API {
 		return $result;
 	}
 
-	protected function request($url, $data = array(), $method = 'GET', array $headers = array()) {
+	protected function request($url, $data = array(), $method = 'GET', array $headers = array()) 
+	{
 		if ($data instanceof Form) 
 			$data = $data->toArray();
 
