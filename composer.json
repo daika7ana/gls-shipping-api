@@ -10,7 +10,7 @@
     ],
     "minimum-stability": "alpha",
     "require": {
-        "php": ">=7.3",
+        "php": ">=7.2",
         "doctrine/common": "~2.10",
         "guzzlehttp/guzzle": "^6.5",
         "econea/nusoap": "~0.9.7",
