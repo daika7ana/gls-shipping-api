@@ -60,8 +60,7 @@ class API
             throw new Exception\ParcelGeneration(
                 'Response with error',
                 $data['errcode'] ?
-                "{$data['errcode']}: {$data['errdesc']}" :
-                "Unknown error - no errcode received"
+                    "{$data['errcode']}: {$data['errdesc']}" : "Unknown error - no errcode received"
             );
         }
 
@@ -134,7 +133,7 @@ class API
 
     public function getTrackingUrl($parcelNumber)
     {
-        return "http://online.gls-romania.ro/tt_page.php?tt_value=$parcelNumber";
+        return "https://online.gls-romania.ro/tt_page.php?tt_value=$parcelNumber";
     }
 
     /**
@@ -144,21 +143,21 @@ class API
      * 
      * @return Array
      */
-    public function validateGLSAccount(Array $login_data): Array
+    public function validateGLSAccount(array $login_data): array
     {
         $required_keys = ['username', 'password'];
         $missing_keys = array_diff_key(array_flip($required_keys), $login_data);
-        
+
         if ($missing_keys) {
             throw new Exception('The provided array has missing keys.');
         }
 
         $login_data['page'] = 'welcome.php';
 
-        $html = $this->request('http://online.gls-romania.ro/login.php', $login_data , 'POST');
+        $html = $this->request('https://online.gls-romania.ro/login.php', $login_data, 'POST');
 
-		$dom = new Crawler($html);
-		$row = $dom->filter('meta[http-equiv="Content-Type"]')->first();
+        $dom = new Crawler($html);
+        $row = $dom->filter('meta[http-equiv="Content-Type"]')->first();
 
         return !count($row) ? array('success' => 1) : array('success' => 0);
     }
@@ -193,7 +192,7 @@ class API
         }
 
         $client = new Client();
-        $response = $client->request($method, $url, [ 'form_params' => $data ]);
+        $response = $client->request($method, $url, ['form_params' => $data]);
 
         return $response->getBody()->getContents();
     }
