@@ -59,12 +59,12 @@ class API
         if (empty($data['successfull'])) {
             throw new Exception\ParcelGeneration(
                 'Response with error',
-                $data['errcode'] ?
-                    "{$data['errcode']}: {$data['errdesc']}" : "Unknown error - no errcode received"
+                (is_array($data) && isset($data['errcode'])) ?
+                "{$data['errcode']}: {$data['errdesc']}" : "Unknown error - no errcode received"
             );
         }
 
-        if (!count($data['pcls'])) {
+        if (empty($data['pcls'])) {
             throw new Exception\ParcelGeneration("No parcels numbers received!");
         }
 
