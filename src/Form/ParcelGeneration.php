@@ -173,7 +173,7 @@ class ParcelGeneration extends Form {
 	 * type of the printer – list in Appendix B
 	 *
 	 * @Assert\NotBlank
-	 * @Assert\Choice(choices = { "A6", "A6_PP", "A6_ONA4", "A4_2x2", "A4_4x1" })
+	 * @Assert\Choice(choices = { "A6", "A6_PP", "A6_ONA4", "A4_2x2", "A4_4x1", "T_85x85" })
 	 */
 	protected $printertemplate = 'A6';
 	/**
