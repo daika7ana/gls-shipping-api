@@ -60,7 +60,7 @@ class API
             throw new Exception\ParcelGeneration(
                 'Response with error',
                 (is_array($data) && isset($data['errcode'])) ?
-                "{$data['errcode']}: {$data['errdesc']}" : "Unknown error - no errcode received"
+                    "{$data['errcode']}: {$data['errdesc']}" : "Unknown error - no errcode received"
             );
         }
 
@@ -72,6 +72,24 @@ class API
             'tracking_code' => 1 == count($data['pcls']) ? $data['pcls'][0] : $data['pcls'],
             'raw_pdf' => !empty($data['pdfdata']) ? $data['pdfdata'] : false,
         ];
+    }
+
+    /**
+     * Delete parcel/s number/s
+     */
+    public function deleteParcel(String $parcel_id, array $requested_data)
+    {
+        $required_keys = ['username', 'password', 'senderid'];
+        $missing_keys = array_diff_key(array_flip($required_keys), $requested_data);
+
+        if ($missing_keys) {
+            throw new Exception('The provided array has missing keys.');
+        }
+
+        $data = $requested_data;
+        $data['pclids'] = [$parcel_id];
+
+        return $this->requestNuSOAP('deletelabels', $data);
     }
 
     /**
