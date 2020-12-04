@@ -6,12 +6,6 @@ use nusoap_client;
 use SimpleXMLElement;
 use GuzzleHttp\Client;
 use Symfony\Component\DomCrawler\Crawler;
-use Doctrine\Common\Annotations\AnnotationRegistry;
-
-// Validation autoloading
-AnnotationRegistry::registerLoader(function ($name) {
-    return class_exists($name);
-});
 
 class API
 {
@@ -77,7 +71,7 @@ class API
     /**
      * Delete parcel/s number/s
      */
-    public function deleteParcel(String $parcel_id, array $requested_data)
+    public function deleteParcel(array $parcel_ids, array $requested_data)
     {
         $required_keys = ['username', 'password', 'senderid'];
         $missing_keys = array_diff_key(array_flip($required_keys), $requested_data);
@@ -87,7 +81,7 @@ class API
         }
 
         $data = $requested_data;
-        $data['pclids'] = [$parcel_id];
+        $data['pclids'] = $parcel_ids;
 
         return $this->requestNuSOAP('deletelabels', $data);
     }
@@ -95,14 +89,14 @@ class API
     /**
      * Regenerate PDF based on the already known PclID
      *
-     * @param String $parcel_id required for PDF generation
+     * @param Array $parcel_ids required for PDF generation
      *
      * @param Array $data must contain: ['username', 'password', 'senderid', 'printertemplate']
      * @throws Exception
      *
      * @return SimpleXMLElement
      */
-    public function getParcelPdf(String $parcel_id, array $requested_data): SimpleXMLElement
+    public function getParcelPdf(array $parcel_ids, array $requested_data): SimpleXMLElement
     {
         $required_keys = ['username', 'password', 'senderid', 'printertemplate'];
         $missing_keys = array_diff_key(array_flip($required_keys), $requested_data);
@@ -111,7 +105,11 @@ class API
             throw new Exception('The provided array has missing keys.');
         }
 
-        $requested_parcel_pdf = "<?xml version='1.0' encoding = 'UTF-8'?><DTU RequestType = 'GlsApiRequest' MethodName='printLabels'><Shipments><Shipment><PclIDs><long>{$parcel_id}</long></PclIDs></Shipment></Shipments></DTU>";
+        $requested_parcel_pdf = "<?xml version='1.0' encoding = 'UTF-8'?><DTU RequestType = 'GlsApiRequest' MethodName='printLabels'><Shipments><Shipment><PclIDs>";
+        foreach($parcel_ids as $id) {
+            $requested_parcel_pdf .= "<long>$id</long>";
+        }
+        $requested_parcel_pdf .= "</PclIDs></Shipment></Shipments></DTU>";
 
         $requested_data['data'] = base64_encode(gzencode($requested_parcel_pdf, 9));
         $requested_data['is_autoprint_pdfs'] = false;
