@@ -17,7 +17,7 @@ abstract class Form {
 
 	public function validate()
 	{
-		$validator  = Validation::createValidatorBuilder()->enableAnnotationMapping()->getValidator();
+		$validator  = Validation::createValidatorBuilder()->enableAnnotationMapping(true)->addDefaultDoctrineAnnotationReader()->getValidator();
 		$violations = $validator->validate($this);
 		if ($violations->count()) 
 			throw new Exception\Validation($violations);
