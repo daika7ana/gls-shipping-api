@@ -8,15 +8,15 @@
             "email": "danradu.pana@gmail.com"
         }
     ],
-    "minimum-stability": "alpha",
+    "minimum-stability": "dev",
     "require": {
-        "php": ">=7.2",
-        "doctrine/common": "~2.10",
-        "guzzlehttp/guzzle": "^6.5",
-        "econea/nusoap": "~0.9.7",
-        "symfony/dom-crawler": "~5",
-        "symfony/css-selector": "~5",
-        "symfony/validator": "~5"
+        "php": ">=7.4",
+        "econea/nusoap": "~0.9",
+        "doctrine/common": "~3",
+        "guzzlehttp/guzzle": "~7",
+        "symfony/dom-crawler": "~6",
+        "symfony/css-selector": "~6",
+        "symfony/validator": "~6"
     },
     "autoload": {
         "psr-4": {
