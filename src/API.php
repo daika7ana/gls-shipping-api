@@ -2,6 +2,7 @@
 
 namespace GLS;
 
+use SoapFault;
 use nusoap_client;
 use SimpleXMLElement;
 use GuzzleHttp\Client;
@@ -21,7 +22,7 @@ class API
     ];
 
     /**
-     * API constructor
+     * API constructor.
      *
      * @param string $countryCode HU/SK/CZ/RO/SI/HR
      */
@@ -31,14 +32,11 @@ class API
     }
 
     /**
-     * Get parcel/s number/s
+     * Get parcel/s number/s.
      *
-     * @param Form\ParcelGeneration $form
-     * @return array <pre> {
-     *      tracking_code: '123', // or ['123', '124']
-     *      raw_pdf: => 'pdfrawdatastring'
-     * } </pre>
+     * @param  Form\ParcelGeneration      $form
      * @throws Exception\ParcelGeneration
+     * @return array
      */
     public function generateParcel(Form\ParcelGeneration $form)
     {
@@ -46,20 +44,20 @@ class API
 
         try {
             $data = $this->requestNuSOAP('printlabel', $form);
-        } catch (\SoapFault $e) {
+        } catch (SoapFault $e) {
             throw new Exception\ParcelGeneration($e->getMessage());
         }
 
         if (empty($data['successfull'])) {
             throw new Exception\ParcelGeneration(
                 'Response with error',
-                (is_array($data) && isset($data['errcode'])) ?
-                    "{$data['errcode']}: {$data['errdesc']}" : "Unknown error - no errcode received"
+                (is_array($data) && isset($data['errcode']))
+                    ? "{$data['errcode']}: {$data['errdesc']}" : 'Unknown error - no errcode received'
             );
         }
 
         if (empty($data['pcls'])) {
-            throw new Exception\ParcelGeneration("No parcels numbers received!");
+            throw new Exception\ParcelGeneration('No parcels numbers received!');
         }
 
         return [
@@ -69,7 +67,7 @@ class API
     }
 
     /**
-     * Delete parcel/s number/s
+     * Delete parcel/s number/s.
      */
     public function deleteParcel(array $parcel_ids, array $requested_data)
     {
@@ -87,13 +85,11 @@ class API
     }
 
     /**
-     * Regenerate PDF based on the already known PclID
+     * Regenerate PDF based on the already known PclID.
      *
-     * @param Array $parcel_ids required for PDF generation
-     *
-     * @param Array $data must contain: ['username', 'password', 'senderid', 'printertemplate']
+     * @param  array            $parcel_ids required for PDF generation
+     * @param  array            $data       must contain: ['username', 'password', 'senderid', 'printertemplate']
      * @throws Exception
-     *
      * @return SimpleXMLElement
      */
     public function getParcelPdf(array $parcel_ids, array $requested_data): SimpleXMLElement
@@ -106,10 +102,10 @@ class API
         }
 
         $requested_parcel_pdf = "<?xml version='1.0' encoding = 'UTF-8'?><DTU RequestType = 'GlsApiRequest' MethodName='printLabels'><Shipments><Shipment><PclIDs>";
-        foreach($parcel_ids as $id) {
-            $requested_parcel_pdf .= "<long>$id</long>";
+        foreach ($parcel_ids as $id) {
+            $requested_parcel_pdf .= "<long>{$id}</long>";
         }
-        $requested_parcel_pdf .= "</PclIDs></Shipment></Shipments></DTU>";
+        $requested_parcel_pdf .= '</PclIDs></Shipment></Shipments></DTU>';
 
         $requested_data['data'] = base64_encode(gzencode($requested_parcel_pdf, 9));
         $requested_data['is_autoprint_pdfs'] = false;
@@ -121,11 +117,11 @@ class API
     }
 
     /**
-     * Get parcel status
+     * Get parcel status.
      *
      * @param $tracking_code
-     * @return mixed
      * @throws Exception
+     * @return mixed
      */
     public function getParcelStatus($tracking_code)
     {
@@ -149,15 +145,13 @@ class API
 
     public function getTrackingUrl($parcelNumber)
     {
-        return "https://online.gls-romania.ro/tt_page.php?tt_value=$parcelNumber";
+        return "https://online.gls-romania.ro/tt_page.php?tt_value={$parcelNumber}";
     }
 
     /**
-     * @param Array $login_data must contain ['username', 'password']
-     * 
+     * @param  array     $login_data must contain ['username', 'password']
      * @throws Exception
-     * 
-     * @return Array
+     * @return array
      */
     public function validateGLSAccount(array $login_data): array
     {
@@ -175,16 +169,16 @@ class API
         $dom = new Crawler($html);
         $row = $dom->filter('meta[http-equiv="Content-Type"]')->first();
 
-        return !count($row) ? array('success' => 1) : array('success' => 0);
+        return !count($row) ? ['success' => 1] : ['success' => 0];
     }
 
     /**
-     * @param string $method
-     * @param array|Form $data
-     * @throws \SoapFault
+     * @param  string     $method
+     * @param  array|Form $data
+     * @throws SoapFault
      * @return mixed
      */
-    protected function requestNuSOAP($method, $data = array())
+    protected function requestNuSOAP($method, $data = [])
     {
         if ($data instanceof Form) {
             $data = $data->toArray();
@@ -201,7 +195,7 @@ class API
         return $result;
     }
 
-    protected function request($url, $data = array(), $method = 'GET')
+    protected function request($url, $data = [], $method = 'GET')
     {
         if ($data instanceof Form) {
             $data = $data->toArray();
@@ -214,7 +208,7 @@ class API
     }
 
     /**
-     * Get api url based on country code
+     * Get api url based on country code.
      *
      * @throws Exception
      * @return string

@@ -9,14 +9,16 @@
         }
     ],
     "minimum-stability": "dev",
+    "prefer-stable": true,
     "require": {
-        "php": ">=7.4",
-        "econea/nusoap": "~0.9",
-        "doctrine/common": "~3",
-        "guzzlehttp/guzzle": "~7",
-        "symfony/dom-crawler": "~6",
-        "symfony/css-selector": "~6",
-        "symfony/validator": "~6"
+        "php": ">=8.0",
+        "econea/nusoap": "^0.9",
+        "doctrine/common": "^3.0",
+        "guzzlehttp/guzzle": "^7.2",
+        "symfony/dom-crawler": "^6.2",
+        "symfony/css-selector": "^6.2",
+        "symfony/validator": "^6.2",
+        "egulias/email-validator": "^4.0"
     },
     "autoload": {
         "psr-4": {
