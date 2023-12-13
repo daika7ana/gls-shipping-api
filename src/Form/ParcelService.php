@@ -51,8 +51,8 @@ class ParcelService extends Form
 
     /**
      * 3 letter service code, please see list of services in Appendix A.
-     * @Assert\Choice(choices = {"T12", "PSS", "PRS", "XS", "SZL", "INS", "SBS", "DDS", "SDS", "SAT", "AOS", "24H", "EXW", "SM1", "SM2", "CS1", "TGS", "FDS", "FSS", "PSD", "DPV"})
      */
+    #[Assert\Choice(['T12', 'PSS', 'PRS', 'XS', 'SZL', 'INS', 'SBS', 'DDS', 'SDS', 'SAT', 'AOS', '24H', 'EXW', 'SM1', 'SM2', 'CS1', 'TGS', 'FDS', 'FSS', 'PSD', 'DPV'])]
     protected $code;
 
     /**

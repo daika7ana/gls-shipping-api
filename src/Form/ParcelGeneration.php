@@ -11,184 +11,169 @@ class ParcelGeneration extends Form
 {
     /**
      * user name – request it from GLS.
-     *
-     * @Assert\NotBlank
-     * @Assert\Length(max = 20)
      */
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 20)]
     protected $username;
 
     /**
      * password – request it from GLS.
-     *
-     * @Assert\NotBlank
-     * @Assert\Length(max = 20)
      */
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 20)]
     protected $password;
 
     /**
      * GLS client number – request it from GLS.
-     *
-     * @Assert\NotBlank
-     * @Assert\Length(max = 20)
      */
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 20)]
     protected $senderid;
 
     /**
      * sender name.
-     *
-     * @Assert\NotBlank
-     * @Assert\Length(max = 40)
      */
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 40)]
     protected $sender_name;
 
     /**
      * sender address.
-     *
-     * @Assert\NotBlank
-     * @Assert\Length(max = 80)
      */
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 80)]
     protected $sender_address;
 
     /**
      * sender city.
-     *
-     * @Assert\NotBlank
-     * @Assert\Length(max = 100)
      */
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 100)]
     protected $sender_city;
 
     /**
      * sender zip code.
-     *
-     * @Assert\NotBlank
-     * @Assert\Length(max = 10)
      */
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 10)]
     protected $sender_zipcode;
 
     /**
      * sender country code or country name.
-     *
-     * @Assert\NotBlank
-     * @Assert\Length(max = 32)
      */
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 32)]
     protected $sender_country;
 
     /**
      * sender contact person.
-     * @Assert\Length(max = 40)
      */
+    #[Assert\Length(max: 40)]
     protected $sender_contact;
 
     /**
      * sender phone.
-     * @Assert\Length(max = 40)
      */
+    #[Assert\Length(max: 40)]
     protected $sender_phone;
 
     /**
      * sender email address.
-     *
-     * @GLS\Validator\StrictEmailValidator
      */
+    #[Assert\NotBlank]
+    #[Assert\Email(mode: 'strict')]
     protected $sender_email;
 
     /**
      * consignee name.
-     *
-     * @Assert\NotBlank
-     * @Assert\Length(max = 32)
      */
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 40)]
     protected $consig_name;
 
     /**
      * consignee address.
-     *
-     * @Assert\NotBlank
-     * @Assert\Length(max = 80)
      */
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 80)]
     protected $consig_address;
 
     /**
      * consignee city.
-     *
-     * @Assert\NotBlank
-     * @Assert\Length(max = 100)
      */
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 100)]
     protected $consig_city;
 
     /**
      * consignee zip code.
-     *
-     * @Assert\NotBlank
-     * @Assert\Length(max = 10)
      */
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 10)]
     protected $consig_zipcode;
 
     /**
      * consignee country code or country name.
-     *
-     * @Assert\NotBlank
-     * @Assert\Length(max = 32)
      */
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 32)]
     protected $consig_country;
 
     /**
      * consignee contact person.
-     * @Assert\Length(max = 40)
      */
+    #[Assert\Length(max: 40)]
     protected $consig_contact;
 
     /**
      * consignee phone or SMS number for services.
-     * @Assert\Length(max = 40)
      */
+    #[Assert\Length(max: 40)]
     protected $consig_phone;
 
     /**
      * consignee email address - also used for services.
-     *
-     * @GLS\Validator\StrictEmailValidator
      */
+    #[Assert\NotBlank]
+    #[Assert\Email(mode: 'strict')]
     protected $consig_email;
 
     /**
      * count of the parcels / labels to print.
-     *
-     * @Assert\NotBlank
-     * @Assert\Range(min = 1, max = 9999)
      */
+    #[Assert\NotBlank]
+    #[Assert\Range(min:1, max: 9999)]
     protected $pcount;
 
     /**
      * pickup date in format yyyy-MM-dd.
-     *
-     * @Assert\NotBlank
-     * @Assert\Date
      */
+    #[Assert\NotBlank]
+    #[Assert\Date]
     protected $pickupdate;
 
     /**
      * content of the parcel – info printed on label.
-     * @Assert\Length(max = 512)
      */
+    #[Assert\Length(max: 512)]
     protected $content;
 
     /**
      * client reference.
-     * @Assert\Length(max = 512)
      */
+    #[Assert\Length(max: 512)]
     protected $clientref;
 
     /**
      * COD amount.
-     * @Assert\Range(min = 0, max = 99999)
      */
+    #[Assert\Range(min:1, max: 9999)]
     protected $codamount;
 
     /**
      * COD reference – used if COD amount is set.
-     * @Assert\Length(max = 512)
      */
+    #[Assert\Length(max: 512)]
     protected $codref;
 
     /**
@@ -198,15 +183,12 @@ class ParcelGeneration extends Form
 
     /**
      * type of the printer – list in Appendix B.
-     *
-     * @Assert\NotBlank
-     * @Assert\Choice(choices = { "A6", "A6_PP", "A6_ONA4", "A4_2x2", "A4_4x1", "T_85x85" })
      */
+    #[Assert\NotBlank]
+    #[Assert\Choice(['A6', 'A6_PP', 'A6_ONA4', 'A4_2x2', 'A4_4x1', 'T_85x85'])]
     protected $printertemplate = 'A6';
 
-    /**
-     * @Assert\Choice(choices = {true, false})
-     */
+    #[Assert\Choice([true, false])]
     protected $printit = true;
 
     protected $timestamp;
@@ -322,7 +304,7 @@ class ParcelGeneration extends Form
     /**
      * Set consig_email.
      *
-     * @param  mixed $consig_email
+     * @param mixed $consig_email
      * @return $this
      */
     public function setConsigEmail($consig_email)

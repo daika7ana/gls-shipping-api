@@ -7,16 +7,12 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class ParcelStatus extends Form
 {
-    /**
-     * @Assert\NotBlank
-     * @Assert\Length(max = 30)
-     */
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 30)]
     protected $secret;
 
-    /**
-     * @Assert\NotBlank
-     * @Assert\Length(max = 14)
-     */
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 14)]
     protected $parcel_number;
 
     /**
