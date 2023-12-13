@@ -80,7 +80,6 @@ class ParcelGeneration extends Form
     /**
      * sender email address.
      */
-    #[Assert\NotBlank]
     #[Assert\Email(mode: 'strict')]
     protected $sender_email;
 
@@ -134,7 +133,6 @@ class ParcelGeneration extends Form
     /**
      * consignee email address - also used for services.
      */
-    #[Assert\NotBlank]
     #[Assert\Email(mode: 'strict')]
     protected $consig_email;
 
