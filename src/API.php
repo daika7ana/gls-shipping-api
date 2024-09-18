@@ -184,7 +184,7 @@ class API
             $data = $data->toArray();
         }
 
-        $client = new nusoap_client($this->getApiUrl(), 'wsdl');
+        $client = new nusoap_client($this->getApiUrl(), 'wsdl', false, false, false, false, 5, 5);
         $client->soap_defencoding = 'UTF-8';
         $client->decode_utf8 = false;
 
@@ -202,7 +202,7 @@ class API
         }
 
         $client = new Client();
-        $response = $client->request($method, $url, ['form_params' => $data]);
+        $response = $client->request($method, $url, ['form_params' => $data, 'timeout' => 5, 'connect_timeout' => 2]);
 
         return $response->getBody()->getContents();
     }
