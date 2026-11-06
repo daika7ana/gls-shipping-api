@@ -4,7 +4,7 @@ namespace GLS\Exception;
 
 use GLS\Exception;
 
-abstract class Response extends Exception
+class Response extends Exception
 {
     public function __construct(string $message, mixed $response = null)
     {

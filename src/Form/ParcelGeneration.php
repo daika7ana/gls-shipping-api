@@ -4,6 +4,7 @@ namespace GLS\Form;
 
 use DateTime;
 use DateTimeZone;
+use GLS\Exception;
 use GLS\Form;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -55,7 +56,7 @@ class ParcelGeneration extends Form
      * sender zip code.
      */
     #[Assert\NotBlank]
-    #[Assert\Length(max: 10)]
+    #[Assert\Regex(pattern: '/^\d{4,10}$/', message: 'Zip code must be 4 to 10 digits.')]
     protected ?string $sender_zipcode = null;
 
     /**
@@ -108,7 +109,7 @@ class ParcelGeneration extends Form
      * consignee zip code.
      */
     #[Assert\NotBlank]
-    #[Assert\Length(max: 10)]
+    #[Assert\Regex(pattern: '/^\d{4,10}$/', message: 'Zip code must be 4 to 10 digits.')]
     protected ?string $consig_zipcode = null;
 
     /**
@@ -140,7 +141,12 @@ class ParcelGeneration extends Form
      * count of the parcels / labels to print.
      */
     #[Assert\NotBlank]
-    #[Assert\Range(min: 1, max: 9999)]
+    /**
+     * 1-25: every label's PDF comes back in the same response (~1.2 MB each,
+     * doubled by the SOAP parser), so a bigger batch exhausts a 128 MB process
+     * after GLS already created the shipments. Send one call per 25 instead.
+     */
+    #[Assert\Range(min: 1, max: 25)]
     protected ?int $pcount = null;
 
     /**
@@ -186,7 +192,9 @@ class ParcelGeneration extends Form
     #[Assert\Choice(choices: ['A6', 'A6_PP', 'A6_ONA4', 'A4_2x2', 'A4_4x1', 'T_85x85'])]
     protected string $printertemplate = 'A6';
 
-    #[Assert\Choice(choices: [true, false])]
+    /**
+     * Always true: GLS prints the label as part of printlabel. Not configurable.
+     */
     protected bool $printit = true;
 
     protected ?string $timestamp = null;
@@ -305,13 +313,6 @@ class ParcelGeneration extends Form
         return $this;
     }
 
-    public function setPrintit(bool $printit): static
-    {
-        $this->printit = $printit;
-
-        return $this;
-    }
-
     public function setSenderAddress(?string $sender_address): static
     {
         $this->sender_address = $sender_address;
@@ -392,25 +393,11 @@ class ParcelGeneration extends Form
         return $this;
     }
 
-    public function toArray(): array
-    {
-        $this->timestamp = (new DateTime('now', new DateTimeZone('Europe/Bucharest')))->format('YmdHis');
-        $data = parent::toArray();
-
-        if ($this->services) {
-            $data['services'] = array_map(
-                function (ParcelService $srv) {
-                    return $srv->toArray();
-                },
-                $this->services,
-            );
-        }
-
-        $this->generateHash($data);
-
-        return $data;
-    }
-
+    /**
+     * Set several fields at once, e.g. from a database row.
+     * Unknown keys are ignored, so a mistyped required field stays null and
+     * fails validate() instead of shipping a broken parcel.
+     */
     public function setParcelAttributes(array $array): static
     {
         foreach ($array as $attribute => $value) {
@@ -423,9 +410,46 @@ class ParcelGeneration extends Form
         return $this;
     }
 
-    public function getParcelAttributes(): array
+    public function toArray(): array
     {
-        return get_object_vars($this);
+        $this->timestamp = (new DateTime('now', new DateTimeZone('Europe/Bucharest')))->format('YmdHis');
+        $data = parent::toArray();
+
+        if ($this->services) {
+            $data['services'] = array_map(
+                function (ParcelService $srv) {
+                    return $srv->toArray();
+                },
+                $this->services,
+            );
+        } else {
+            // The WSDL expects a list; sending null makes GLS guess.
+            unset($data['services']);
+        }
+
+        $this->generateHash($data);
+
+        return $data;
+    }
+
+    /**
+     * @throws Exception\Validation
+     */
+    public function validate(): static
+    {
+        parent::validate();
+
+        // GLS answers 22 "Invalid / missing parameters for service(s): INS"
+        // when the insured value is missing, so fail before the round trip.
+        foreach ($this->services ?? [] as $service) {
+            $attributes = $service->toArray();
+
+            if (($attributes['code'] ?? null) === ParcelService::INS && trim((string) ($attributes['info'] ?? '')) === '') {
+                throw new Exception\Validation('Service INS requires the insured value in info.');
+            }
+        }
+
+        return $this;
     }
 
     protected function generateHash(array &$data): void

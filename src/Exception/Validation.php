@@ -7,8 +7,23 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class Validation extends Exception
 {
-    public function __construct(ConstraintViolationListInterface $violations)
+    private ?ConstraintViolationListInterface $violations = null;
+
+    public function __construct(ConstraintViolationListInterface|string $violations)
     {
-        parent::__construct((string) $violations);
+        if ($violations instanceof ConstraintViolationListInterface) {
+            $this->violations = $violations;
+            parent::__construct((string) $violations);
+        } else {
+            parent::__construct($violations);
+        }
+    }
+
+    /**
+     * Structured violations, so a form can show errors per field.
+     */
+    public function getViolations(): ?ConstraintViolationListInterface
+    {
+        return $this->violations;
     }
 }

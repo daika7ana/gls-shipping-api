@@ -1,0 +1,118 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml2/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" class="ie8">
+    <head>
+	    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+	    <title>GLS Online</title>
+            <!--[if IE 8]>
+                <html class="ie8">
+            <![endif]-->
+        <link rel="stylesheet" href="css/main.css?rand=1284539107" type="text/css" />
+        <link rel="stylesheet" href="css/trackAndTrace.css?rand=1534584130" type="text/css" />
+
+        <script type="text/javascript" src="js/globals.js"></script>
+        <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="js/tt_searchbox.js"></script>
+        <script type="text/javascript">
+            function getUrlVars() {
+                var vars = {};
+                var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
+                    vars[key] = value.replace('#', '');
+                });
+
+                return vars;
+            }
+
+            var defTTText = "Număr colet, referinţă client";
+
+            function onload_start() {
+                if (top == self) {
+                    var element;
+                    element = self.document.getElementById("pleaseie7_div");
+                    if (element !== undefined && element != null) {
+                        element.parentNode.removeChild(element);
+                    }
+                    element = self.document.getElementById("insight_div");
+                    if (element !== undefined && element != null) {
+                        element.parentNode.removeChild(element);
+                    }
+                }
+
+                if (typeof self.document.frmTT != "undefined" && typeof self.document.frmTT.tt_value != "undefined") {
+                    resetOnLeave(self.document.frmTT.tt_value, defTTText, true);
+                    self.document.frmTT.tt_value.focus();
+                }
+            }
+
+            function downloadPODasPDF() {
+                var url = window.location.href;
+                var link = self.document.createElement("a");
+                link.href = url;
+
+                var urlVariables = getUrlVars();
+
+                // complete url for generate PDF
+                if (typeof self.document.getElementById("pclid") != 'undefined' &&
+                    typeof urlVariables['uid']                   == 'undefined' &&
+                    typeof urlVariables['senderName'] == 'undefined' &&
+                    typeof urlVariables['senderid'] == 'undefined'
+                )
+                {
+                    url = link.protocol + "//" + link.host + "/generateFiles.php?function=tt_getPodAsPdf&pclid=" + self.document.getElementById("pclid").value + "&senderid=" + self.document.getElementById("senderid").value;
+                }
+                else {
+                    
+                    url = link.protocol + "//" + link.host + "/generateFiles.php?function=tt_getPodAsPdf&pclid=" + urlVariables['tt_value'] + "&uid=" + urlVariables['uid'] + "&userName=" + urlVariables['userName'] + "&lng=" + urlVariables['lng'] + "&senderid=" + self.document.getElementById("senderid").value;
+                }
+
+                window.location.href = url;
+            }
+
+            function downloadPsPODasImage() {
+                var url = window.location.href;
+                var link = self.document.createElement("a");
+                link.href = url;
+
+                // complete url for generate png
+                url = link.protocol + "//" + link.host + "/generateFiles.php?function=tt_getPsPOD&path=" + self.document.getElementById("psPODpath").value + "&pclid=" + self.document.getElementById("pclid").value + "&senderid=" + self.document.getElementById("senderid").value;
+                window.location.href = url;
+            }
+	    </script>
+    </head>
+
+    <body class="subpage" onLoad="onload_start();">
+        <div class="h-center frame" style="width: 600px; margin-top: 10px;"><br/><h1>Urmărire colet<h1><form name="frmTT" method="POST" action="tt_page.php" ><input type="hidden" name="page" value="tt_page.php" />
+                <input
+                    style="width: 150px;"
+                    type="text"
+                    name="tt_value" id="tt_value"
+                    title="Număr colet, referinţă client"
+                    onFocus="clearOnEnter(this, defTTText)"
+                    onBlur="resetOnLeave(this, defTTText)" value=""
+                />
+        &nbsp;
+                <img
+                    style="cursor: pointer; vertical-align:middle;"
+                    src="img/gls_arrow.png"
+                    alt="OK"
+                    onclick="if (self.document.frmTT.tt_value.value != 'Număr colet, referinţă client') self.document.frmTT.submit();"
+                />
+
+                <div id="diverrormsg" class="error" >
+                    <div class="h-center" id="errormsg"><h1>Numărul coletului nu a fost găsit!<h1></div>
+                </div>
+        
+            </form>
+        
+            <br><br>
+            <div>
+                <a href="http://www.gls-group.eu/276-I-PORTAL-WEB/content/GLS/NL99/EN/5004_gls_track_trace.htm\" target="_blank" >
+                    International Track&amp;Trace >>
+                </a>
+            </div>
+            <br></div><div id="pleaseie7_div" class="h-center frame" style="width: 570px; margin-top: 40px; padding:20px;" >
+                    <i>Pentru a rula aplicatia trebuie sa aveti instalat Internet Explorer 8.0 sau Firefox 3.0. Javascript trebuie sa fie activat in setarile browserului.<br /><br />
+Daca nu aveti "local data storage" activat, vor fi disponibile doar meniurile pentru care nu e necesara autentificare cu user si parola.<br /><br />
+Pentru login automat "permanent local data storage" trebuie sa fie activat in browserul de internet.</i>
+                </div>
