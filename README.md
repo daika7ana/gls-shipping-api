@@ -11,7 +11,7 @@ Hungary (`HU`), Slovakia (`SK`), Czechia (`CZ`), Romania (`RO`), Slovenia
 composer require daika7ana/gls-shipping-api
 ```
 
-PHP 8.1+. Symfony 8 packages need PHP 8.4+, so on older PHP Composer picks
+PHP 8.2+. Symfony 8 packages need PHP 8.4+, so on older PHP Composer picks
 Symfony 6.2/7.
 
 ## Create a parcel
@@ -118,5 +118,4 @@ $api->setHttpClient($guzzleClientWithMockHandler); // tracking and login only
 
 ```bash
 composer test
-composer lint
 ```
