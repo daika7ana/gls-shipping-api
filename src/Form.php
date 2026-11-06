@@ -2,24 +2,24 @@
 
 namespace GLS;
 
-use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Constraints\EmailValidator;
 use Symfony\Component\Validator\ConstraintValidatorFactory;
+use Symfony\Component\Validator\Validation;
 
 abstract class Form
 {
-    public static function newInstance()
+    public static function newInstance(): static
     {
         return new static();
     }
 
-    public function toArray()
+    public function toArray(): array
     {
         return get_object_vars($this);
     }
 
-    public function validate()
+    public function validate(): static
     {
         $validator = Validation::createValidatorBuilder()
             ->enableAttributeMapping()

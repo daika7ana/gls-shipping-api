@@ -2,6 +2,4 @@
 
 namespace GLS\Exception;
 
-class ParcelGeneration extends Response
-{
-}
+class ParcelGeneration extends Response {}

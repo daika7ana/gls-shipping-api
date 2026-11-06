@@ -9,32 +9,20 @@ class ParcelStatus extends Form
 {
     #[Assert\NotBlank]
     #[Assert\Length(max: 30)]
-    protected $secret;
+    protected ?string $secret = null;
 
     #[Assert\NotBlank]
     #[Assert\Length(max: 14)]
-    protected $parcel_number;
+    protected ?string $parcel_number = null;
 
-    /**
-     * Set parcel_number.
-     *
-     * @param  mixed $parcel_number
-     * @return $this
-     */
-    public function setParcelNumber($parcel_number)
+    public function setParcelNumber(?string $parcel_number): static
     {
         $this->parcel_number = $parcel_number;
 
         return $this;
     }
 
-    /**
-     * Set secret.
-     *
-     * @param  mixed $secret
-     * @return $this
-     */
-    public function setSecret($secret)
+    public function setSecret(?string $secret): static
     {
         $this->secret = $secret;
 

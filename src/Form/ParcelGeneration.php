@@ -3,8 +3,8 @@
 namespace GLS\Form;
 
 use DateTime;
-use GLS\Form;
 use DateTimeZone;
+use GLS\Form;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class ParcelGeneration extends Form
@@ -14,519 +14,361 @@ class ParcelGeneration extends Form
      */
     #[Assert\NotBlank]
     #[Assert\Length(max: 20)]
-    protected $username;
+    protected ?string $username = null;
 
     /**
      * password – request it from GLS.
      */
     #[Assert\NotBlank]
     #[Assert\Length(max: 20)]
-    protected $password;
+    protected ?string $password = null;
 
     /**
      * GLS client number – request it from GLS.
      */
     #[Assert\NotBlank]
     #[Assert\Length(max: 20)]
-    protected $senderid;
+    protected ?string $senderid = null;
 
     /**
      * sender name.
      */
     #[Assert\NotBlank]
     #[Assert\Length(max: 40)]
-    protected $sender_name;
+    protected ?string $sender_name = null;
 
     /**
      * sender address.
      */
     #[Assert\NotBlank]
     #[Assert\Length(max: 80)]
-    protected $sender_address;
+    protected ?string $sender_address = null;
 
     /**
      * sender city.
      */
     #[Assert\NotBlank]
     #[Assert\Length(max: 100)]
-    protected $sender_city;
+    protected ?string $sender_city = null;
 
     /**
      * sender zip code.
      */
     #[Assert\NotBlank]
     #[Assert\Length(max: 10)]
-    protected $sender_zipcode;
+    protected ?string $sender_zipcode = null;
 
     /**
      * sender country code or country name.
      */
     #[Assert\NotBlank]
     #[Assert\Length(max: 32)]
-    protected $sender_country;
+    protected ?string $sender_country = null;
 
     /**
      * sender contact person.
      */
     #[Assert\Length(max: 40)]
-    protected $sender_contact;
+    protected ?string $sender_contact = null;
 
     /**
      * sender phone.
      */
     #[Assert\Length(max: 40)]
-    protected $sender_phone;
+    protected ?string $sender_phone = null;
 
     /**
      * sender email address.
      */
-    #[Assert\Email(mode: 'strict')]
-    protected $sender_email;
+    #[Assert\Email]
+    protected ?string $sender_email = null;
 
     /**
      * consignee name.
      */
     #[Assert\NotBlank]
     #[Assert\Length(max: 40)]
-    protected $consig_name;
+    protected ?string $consig_name = null;
 
     /**
      * consignee address.
      */
     #[Assert\NotBlank]
     #[Assert\Length(max: 80)]
-    protected $consig_address;
+    protected ?string $consig_address = null;
 
     /**
      * consignee city.
      */
     #[Assert\NotBlank]
     #[Assert\Length(max: 100)]
-    protected $consig_city;
+    protected ?string $consig_city = null;
 
     /**
      * consignee zip code.
      */
     #[Assert\NotBlank]
     #[Assert\Length(max: 10)]
-    protected $consig_zipcode;
+    protected ?string $consig_zipcode = null;
 
     /**
      * consignee country code or country name.
      */
     #[Assert\NotBlank]
     #[Assert\Length(max: 32)]
-    protected $consig_country;
+    protected ?string $consig_country = null;
 
     /**
      * consignee contact person.
      */
     #[Assert\Length(max: 40)]
-    protected $consig_contact;
+    protected ?string $consig_contact = null;
 
     /**
      * consignee phone or SMS number for services.
      */
     #[Assert\Length(max: 40)]
-    protected $consig_phone;
+    protected ?string $consig_phone = null;
 
     /**
      * consignee email address - also used for services.
      */
-    #[Assert\Email(mode: 'strict')]
-    protected $consig_email;
+    #[Assert\Email]
+    protected ?string $consig_email = null;
 
     /**
      * count of the parcels / labels to print.
      */
     #[Assert\NotBlank]
-    #[Assert\Range(min:1, max: 9999)]
-    protected $pcount;
+    #[Assert\Range(min: 1, max: 9999)]
+    protected ?int $pcount = null;
 
     /**
      * pickup date in format yyyy-MM-dd.
      */
     #[Assert\NotBlank]
     #[Assert\Date]
-    protected $pickupdate;
+    protected ?string $pickupdate = null;
 
     /**
      * content of the parcel – info printed on label.
      */
     #[Assert\Length(max: 512)]
-    protected $content;
+    protected ?string $content = null;
 
     /**
      * client reference.
      */
     #[Assert\Length(max: 512)]
-    protected $clientref;
+    protected ?string $clientref = null;
 
     /**
      * COD amount.
      */
-    #[Assert\Range(min:0, max: 99999)]
-    protected $codamount;
+    #[Assert\Range(min: 0, max: 99999)]
+    protected int|float|string|null $codamount = null;
 
     /**
      * COD reference – used if COD amount is set.
      */
     #[Assert\Length(max: 512)]
-    protected $codref;
+    protected ?string $codref = null;
 
     /**
      * @var ParcelService[]
      */
-    protected $services;
+    protected ?array $services = null;
 
     /**
      * type of the printer – list in Appendix B.
      */
     #[Assert\NotBlank]
-    #[Assert\Choice(['A6', 'A6_PP', 'A6_ONA4', 'A4_2x2', 'A4_4x1', 'T_85x85'])]
-    protected $printertemplate = 'A6';
+    #[Assert\Choice(choices: ['A6', 'A6_PP', 'A6_ONA4', 'A4_2x2', 'A4_4x1', 'T_85x85'])]
+    protected string $printertemplate = 'A6';
 
-    #[Assert\Choice([true, false])]
-    protected $printit = true;
+    #[Assert\Choice(choices: [true, false])]
+    protected bool $printit = true;
 
-    protected $timestamp;
+    protected ?string $timestamp = null;
 
-    protected $hash;
+    protected ?string $hash = null;
 
-    // --- Setters
-
-    /**
-     * Set consig_name.
-     *
-     * @param  mixed $consig_name
-     * @return $this
-     */
-    public function setConsigName($consig_name)
+    public function setConsigName(?string $consig_name): static
     {
         $this->consig_name = $consig_name;
 
         return $this;
     }
 
-    /**
-     * Set clientref.
-     *
-     * @param  mixed $clientref
-     * @return $this
-     */
-    public function setClientref($clientref)
+    public function setClientref(?string $clientref): static
     {
         $this->clientref = $clientref;
 
         return $this;
     }
 
-    /**
-     * Set codamount.
-     *
-     * @param  mixed $codamount
-     * @return $this
-     */
-    public function setCodamount($codamount)
+    public function setCodamount(int|float|string|null $codamount): static
     {
         $this->codamount = $codamount;
 
         return $this;
     }
 
-    /**
-     * Set codref.
-     *
-     * @param  mixed $codref
-     * @return $this
-     */
-    public function setCodref($codref)
+    public function setCodref(?string $codref): static
     {
         $this->codref = $codref;
 
         return $this;
     }
 
-    /**
-     * Set consig_address.
-     *
-     * @param  mixed $consig_address
-     * @return $this
-     */
-    public function setConsigAddress($consig_address)
+    public function setConsigAddress(?string $consig_address): static
     {
         $this->consig_address = $consig_address;
 
         return $this;
     }
 
-    /**
-     * Set consig_city.
-     *
-     * @param  mixed $consig_city
-     * @return $this
-     */
-    public function setConsigCity($consig_city)
+    public function setConsigCity(?string $consig_city): static
     {
         $this->consig_city = $consig_city;
 
         return $this;
     }
 
-    /**
-     * Set consig_contact.
-     *
-     * @param  mixed $consig_contact
-     * @return $this
-     */
-    public function setConsigContact($consig_contact)
+    public function setConsigContact(?string $consig_contact): static
     {
         $this->consig_contact = $consig_contact;
 
         return $this;
     }
 
-    /**
-     * Set consig_country.
-     *
-     * @param  mixed $consig_country
-     * @return $this
-     */
-    public function setConsigCountry($consig_country)
+    public function setConsigCountry(?string $consig_country): static
     {
         $this->consig_country = $consig_country;
 
         return $this;
     }
 
-    /**
-     * Set consig_email.
-     *
-     * @param mixed $consig_email
-     * @return $this
-     */
-    public function setConsigEmail($consig_email)
+    public function setConsigEmail(?string $consig_email): static
     {
         $this->consig_email = $consig_email;
 
         return $this;
     }
 
-    /**
-     * Set consig_phone.
-     *
-     * @param  mixed $consig_phone
-     * @return $this
-     */
-    public function setConsigPhone($consig_phone)
+    public function setConsigPhone(?string $consig_phone): static
     {
         $this->consig_phone = $consig_phone;
 
         return $this;
     }
 
-    /**
-     * Set consig_zipcode.
-     *
-     * @param  mixed $consig_zipcode
-     * @return $this
-     */
-    public function setConsigZipcode($consig_zipcode)
+    public function setConsigZipcode(?string $consig_zipcode): static
     {
         $this->consig_zipcode = $consig_zipcode;
 
         return $this;
     }
 
-    /**
-     * Set content.
-     *
-     * @param  mixed $content
-     * @return $this
-     */
-    public function setContent($content)
+    public function setContent(?string $content): static
     {
         $this->content = $content;
 
         return $this;
     }
 
-    /**
-     * Set password.
-     *
-     * @param  mixed $password
-     * @return $this
-     */
-    public function setPassword($password)
+    public function setPassword(?string $password): static
     {
         $this->password = $password;
 
         return $this;
     }
 
-    /**
-     * Set pcount.
-     *
-     * @param  mixed $pcount
-     * @return $this
-     */
-    public function setPcount($pcount)
+    public function setPcount(?int $pcount): static
     {
         $this->pcount = $pcount;
 
         return $this;
     }
 
-    /**
-     * Set pickupdate.
-     *
-     * @param  mixed $pickupdate
-     * @return $this
-     */
-    public function setPickupdate($pickupdate)
+    public function setPickupdate(?string $pickupdate): static
     {
         $this->pickupdate = $pickupdate;
 
         return $this;
     }
 
-    /**
-     * Set printertemplate.
-     *
-     * @param  mixed $printertemplate
-     * @return $this
-     */
-    public function setPrintertemplate($printertemplate)
+    public function setPrintertemplate(string $printertemplate): static
     {
         $this->printertemplate = $printertemplate;
 
         return $this;
     }
 
-    /**
-     * Set printit.
-     *
-     * @param  mixed $printit
-     * @return $this
-     */
-    public function setPrintit($printit)
+    public function setPrintit(bool $printit): static
     {
         $this->printit = $printit;
 
         return $this;
     }
 
-    /**
-     * Set sender_address.
-     *
-     * @param  mixed $sender_address
-     * @return $this
-     */
-    public function setSenderAddress($sender_address)
+    public function setSenderAddress(?string $sender_address): static
     {
         $this->sender_address = $sender_address;
 
         return $this;
     }
 
-    /**
-     * Set sender_city.
-     *
-     * @param  mixed $sender_city
-     * @return $this
-     */
-    public function setSenderCity($sender_city)
+    public function setSenderCity(?string $sender_city): static
     {
         $this->sender_city = $sender_city;
 
         return $this;
     }
 
-    /**
-     * Set sender_contact.
-     *
-     * @param  mixed $sender_contact
-     * @return $this
-     */
-    public function setSenderContact($sender_contact)
+    public function setSenderContact(?string $sender_contact): static
     {
         $this->sender_contact = $sender_contact;
 
         return $this;
     }
 
-    /**
-     * Set sender_country.
-     *
-     * @param  mixed $sender_country
-     * @return $this
-     */
-    public function setSenderCountry($sender_country)
+    public function setSenderCountry(?string $sender_country): static
     {
         $this->sender_country = $sender_country;
 
         return $this;
     }
 
-    /**
-     * Set sender_email.
-     *
-     * @param  mixed $sender_email
-     * @return $this
-     */
-    public function setSenderEmail($sender_email)
+    public function setSenderEmail(?string $sender_email): static
     {
         $this->sender_email = $sender_email;
 
         return $this;
     }
 
-    /**
-     * Set sender_name.
-     *
-     * @param  mixed $sender_name
-     * @return $this
-     */
-    public function setSenderName($sender_name)
+    public function setSenderName(?string $sender_name): static
     {
         $this->sender_name = $sender_name;
 
         return $this;
     }
 
-    /**
-     * Set sender_phone.
-     *
-     * @param  mixed $sender_phone
-     * @return $this
-     */
-    public function setSenderPhone($sender_phone)
+    public function setSenderPhone(?string $sender_phone): static
     {
         $this->sender_phone = $sender_phone;
 
         return $this;
     }
 
-    /**
-     * Set sender_zipcode.
-     *
-     * @param  mixed $sender_zipcode
-     * @return $this
-     */
-    public function setSenderZipcode($sender_zipcode)
+    public function setSenderZipcode(?string $sender_zipcode): static
     {
         $this->sender_zipcode = $sender_zipcode;
 
         return $this;
     }
 
-    /**
-     * Set senderid.
-     *
-     * @param  mixed $senderid
-     * @return $this
-     */
-    public function setSenderid($senderid)
+    public function setSenderid(?string $senderid): static
     {
         $this->senderid = $senderid;
 
@@ -534,34 +376,23 @@ class ParcelGeneration extends Form
     }
 
     /**
-     * Set services.
-     *
-     * @param  \GLS\Form\ParcelService[] $services
-     * @return $this
+     * @param ParcelService[] $services
      */
-    public function setServices(array $services)
+    public function setServices(array $services): static
     {
         $this->services = $services;
 
         return $this;
     }
 
-    /**
-     * Set username.
-     *
-     * @param  mixed $username
-     * @return $this
-     */
-    public function setUsername($username)
+    public function setUsername(?string $username): static
     {
         $this->username = $username;
 
         return $this;
     }
 
-    // Class functions
-
-    public function toArray()
+    public function toArray(): array
     {
         $this->timestamp = (new DateTime('now', new DateTimeZone('Europe/Bucharest')))->format('YmdHis');
         $data = parent::toArray();
@@ -571,7 +402,7 @@ class ParcelGeneration extends Form
                 function (ParcelService $srv) {
                     return $srv->toArray();
                 },
-                $this->services
+                $this->services,
             );
         }
 
@@ -580,10 +411,13 @@ class ParcelGeneration extends Form
         return $data;
     }
 
-    public function setParcelAttributes(array $array): self
+    public function setParcelAttributes(array $array): static
     {
         foreach ($array as $attribute => $value) {
-            $this->{$attribute} = $value;
+            // Unknown keys would create deprecated dynamic properties.
+            if (property_exists($this, $attribute)) {
+                $this->{$attribute} = $value;
+            }
         }
 
         return $this;
@@ -594,7 +428,7 @@ class ParcelGeneration extends Form
         return get_object_vars($this);
     }
 
-    protected function generateHash(&$data): void
+    protected function generateHash(array &$data): void
     {
         $hash = '';
         foreach ($data as $key => $value) {

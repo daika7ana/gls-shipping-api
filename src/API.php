@@ -2,17 +2,17 @@
 
 namespace GLS;
 
-use SoapFault;
+use GuzzleHttp\Client;
 use nusoap_client;
 use SimpleXMLElement;
-use GuzzleHttp\Client;
+use SoapFault;
 use Symfony\Component\DomCrawler\Crawler;
 
 class API
 {
-    protected $countryCode = '';
+    protected string $countryCode = '';
 
-    protected $urls = [
+    protected array $urls = [
         'HU' => 'http://online.gls-hungary.com/webservices/soap_server.php?wsdl',
         'SK' => 'http://online.gls-slovakia.sk/webservices/soap_server.php?wsdl',
         'CZ' => 'http://online.gls-czech.com/webservices/soap_server.php?wsdl',
@@ -22,11 +22,9 @@ class API
     ];
 
     /**
-     * API constructor.
-     *
      * @param string $countryCode HU/SK/CZ/RO/SI/HR
      */
-    public function __construct($countryCode)
+    public function __construct(string $countryCode)
     {
         $this->countryCode = strtoupper($countryCode);
     }
@@ -34,11 +32,9 @@ class API
     /**
      * Get parcel/s number/s.
      *
-     * @param  Form\ParcelGeneration      $form
      * @throws Exception\ParcelGeneration
-     * @return array
      */
-    public function generateParcel(Form\ParcelGeneration $form)
+    public function generateParcel(Form\ParcelGeneration $form): array
     {
         $form->setPrintit(true)->validate();
 
@@ -52,7 +48,7 @@ class API
             throw new Exception\ParcelGeneration(
                 'Response with error',
                 (is_array($data) && isset($data['errcode']))
-                    ? "{$data['errcode']}: {$data['errdesc']}" : 'Unknown error - no errcode received'
+                    ? "{$data['errcode']}: {$data['errdesc']}" : 'Unknown error - no errcode received',
             );
         }
 
@@ -68,8 +64,10 @@ class API
 
     /**
      * Delete parcel/s number/s.
+     *
+     * @throws SoapFault
      */
-    public function deleteParcel(array $parcel_ids, array $requested_data)
+    public function deleteParcel(array $parcel_ids, array $requested_data): mixed
     {
         $required_keys = ['username', 'password', 'senderid'];
         $missing_keys = array_diff_key(array_flip($required_keys), $requested_data);
@@ -87,10 +85,10 @@ class API
     /**
      * Regenerate PDF based on the already known PclID.
      *
-     * @param  array            $parcel_ids required for PDF generation
-     * @param  array            $data       must contain: ['username', 'password', 'senderid', 'printertemplate']
+     * @param array $parcel_ids     required for PDF generation
+     * @param array $requested_data must contain: ['username', 'password', 'senderid', 'printertemplate']
+     *
      * @throws Exception
-     * @return SimpleXMLElement
      */
     public function getParcelPdf(array $parcel_ids, array $requested_data): SimpleXMLElement
     {
@@ -119,11 +117,9 @@ class API
     /**
      * Get parcel status.
      *
-     * @param $tracking_code
      * @throws Exception
-     * @return mixed
      */
-    public function getParcelStatus($tracking_code)
+    public function getParcelStatus(string $tracking_code): array
     {
         $html = $this->request($this->getTrackingUrl($tracking_code));
         $dom = new Crawler($html);
@@ -133,25 +129,23 @@ class API
             throw new Exception('Tracking code wasn`t registered or error occured!');
         }
 
-        $data = array_map('trim', [
+        return array_map('trim', [
             'date' => $row->filter('td')->eq(0)->text(),
             'status' => $row->filter('td')->eq(1)->text(),
             'depot' => $row->filter('td')->eq(2)->text(),
             'info' => $row->filter('td')->eq(3)->text(),
         ]);
-
-        return $data;
     }
 
-    public function getTrackingUrl($parcelNumber)
+    public function getTrackingUrl(string $parcelNumber): string
     {
         return "https://online.gls-romania.ro/tt_page.php?tt_value={$parcelNumber}";
     }
 
     /**
-     * @param  array     $login_data must contain ['username', 'password']
+     * @param array $login_data must contain ['username', 'password']
+     *
      * @throws Exception
-     * @return array
      */
     public function validateGLSAccount(array $login_data): array
     {
@@ -173,12 +167,9 @@ class API
     }
 
     /**
-     * @param  string     $method
-     * @param  array|Form $data
      * @throws SoapFault
-     * @return mixed
      */
-    protected function requestNuSOAP($method, $data = [])
+    protected function requestNuSOAP(string $method, array|Form $data = []): mixed
     {
         if ($data instanceof Form) {
             $data = $data->toArray();
@@ -195,7 +186,7 @@ class API
         return $result;
     }
 
-    protected function request($url, $data = [], $method = 'GET')
+    protected function request(string $url, array|Form $data = [], string $method = 'GET'): string
     {
         if ($data instanceof Form) {
             $data = $data->toArray();
@@ -211,9 +202,8 @@ class API
      * Get api url based on country code.
      *
      * @throws Exception
-     * @return string
      */
-    protected function getApiUrl()
+    protected function getApiUrl(): string
     {
         if (empty($this->urls[$this->countryCode])) {
             throw new Exception('Wrong country code - ' . $this->countryCode);

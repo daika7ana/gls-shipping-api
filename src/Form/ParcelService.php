@@ -52,34 +52,22 @@ class ParcelService extends Form
     /**
      * 3 letter service code, please see list of services in Appendix A.
      */
-    #[Assert\Choice(['T12', 'PSS', 'PRS', 'XS', 'SZL', 'INS', 'SBS', 'DDS', 'SDS', 'SAT', 'AOS', '24H', 'EXW', 'SM1', 'SM2', 'CS1', 'TGS', 'FDS', 'FSS', 'PSD', 'DPV'])]
-    protected $code;
+    #[Assert\Choice(choices: ['T12', 'PSS', 'PRS', 'XS', 'SZL', 'INS', 'SBS', 'DDS', 'SDS', 'SAT', 'AOS', '24H', 'EXW', 'SM1', 'SM2', 'CS1', 'TGS', 'FDS', 'FSS', 'PSD', 'DPV'])]
+    protected ?string $code = null;
 
     /**
      * parameter for service.
      */
-    protected $info = '';
+    protected ?string $info = '';
 
-    /**
-     * Set code.
-     *
-     * @param  mixed $code
-     * @return $this
-     */
-    public function setCode($code)
+    public function setCode(?string $code): static
     {
         $this->code = $code;
 
         return $this;
     }
 
-    /**
-     * Set info.
-     *
-     * @param  mixed $info
-     * @return $this
-     */
-    public function setInfo($info)
+    public function setInfo(?string $info): static
     {
         $this->info = $info;
 
